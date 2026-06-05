@@ -4,8 +4,6 @@ from utils.ai_analyst import get_ai_insights, parse_insights
 st.set_page_config(page_title="Ask AI — InsightPilot", page_icon="🤖", layout="wide")
 
 st.markdown("# 🤖 Ask AI About Your Data")
-st.markdown("Powered by Google Gemini — free, no credit card needed.")
-st.markdown("---")
 
 if "df" not in st.session_state:
     st.warning("⚠️ No data loaded. Go to the **Upload** page first.")

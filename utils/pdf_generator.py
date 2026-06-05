@@ -6,15 +6,15 @@ import os
 
 class ReportPDF(FPDF):
     def header(self):
-    self.set_font("Helvetica", "B", 16)
-    self.set_text_color(79, 129, 189)
-    self.cell(0, 10, "InsightPilot AI - Data Analysis Report",
-              align="C", new_x="LMARGIN", new_y="NEXT")
-    self.set_font("Helvetica", size=9)
-    self.set_text_color(150, 150, 150)
-    self.cell(0, 6, f"Generated: {datetime.now().strftime('%B %d, %Y %H:%M')}",
-              align="C", new_x="LMARGIN", new_y="NEXT")
-    self.ln(4)
+        self.set_font("Helvetica", "B", 16)
+        self.set_text_color(79, 129, 189)
+        self.cell(0, 10, "InsightPilot AI - Data Analysis Report",
+                align="C", new_x="LMARGIN", new_y="NEXT")
+        self.set_font("Helvetica", size=9)
+        self.set_text_color(150, 150, 150)
+        self.cell(0, 6, f"Generated: {datetime.now().strftime('%B %d, %Y %H:%M')}",
+                align="C", new_x="LMARGIN", new_y="NEXT")
+        self.ln(4)
 
     def footer(self):
         self.set_y(-15)

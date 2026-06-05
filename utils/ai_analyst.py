@@ -4,7 +4,7 @@ import json
 
 def get_ai_insights(df, api_key, question=None):
     genai.configure(api_key=api_key)
-    model   = genai.GenerativeModel("gemini-1.5-flash")
+    model   = genai.GenerativeModel("gemini-2.0-flash")
     summary = build_data_summary(df)
 
     if question:

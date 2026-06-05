@@ -1,32 +1,97 @@
-# Run this once to generate it
-import pandas as pd, numpy as np, random
-from datetime import datetime, timedelta
+from fpdf import FPDF
+from datetime import datetime
+import tempfile
+import os
 
-random.seed(42); np.random.seed(42)
-products   = ["Laptop","Phone","Tablet","Monitor","Keyboard","Mouse","Headphones","Webcam"]
-regions    = ["North","South","East","West"]
-categories = {"Laptop":"Computing","Phone":"Mobile","Tablet":"Mobile",
-              "Monitor":"Computing","Keyboard":"Accessories",
-              "Mouse":"Accessories","Headphones":"Audio","Webcam":"Accessories"}
 
-rows = []
-for i in range(1000):
-    product  = random.choice(products)
-    date     = datetime(2024,1,1) + timedelta(days=random.randint(0,364))
-    qty      = random.randint(1, 20)
-    price    = {"Laptop":999,"Phone":699,"Tablet":449,"Monitor":379,
-                "Keyboard":89,"Mouse":49,"Headphones":199,"Webcam":129}[product]
-    rows.append({
-        "date": date.strftime("%Y-%m-%d"),
-        "product": product,
-        "category": categories[product],
-        "region": random.choice(regions),
-        "quantity": qty,
-        "unit_price": price,
-        "revenue": round(qty * price * random.uniform(0.9,1.1), 2),
-        "customer_id": f"CUST-{random.randint(1000,9999)}",
-        "returned": random.random() < 0.05
-    })
+class ReportPDF(FPDF):
+    def header(self):
+        self.set_font("Helvetica", "B", 16)
+        self.set_text_color(79, 129, 189)
+        self.cell(0, 10, "InsightPilot AI - Data Analysis Report",
+                  align="C", new_x="LMARGIN", new_y="NEXT")
+        self.set_font("Helvetica", size=9)
+        self.set_text_color(150, 150, 150)
+        self.cell(0, 6, f"Generated: {datetime.now().strftime('%B %d, %Y %H:%M')}",
+                  align="C", new_x="LMARGIN", new_y="NEXT")
+        self.ln(4)
 
-pd.DataFrame(rows).to_csv("sample_data/sample_sales.csv", index=False)
-print("✅ Sample data created")
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Helvetica", size=8)
+        self.set_text_color(150, 150, 150)
+        self.cell(0, 10, f"Page {self.page_no()}", align="C")
+
+    def section_title(self, title):
+        self.set_font("Helvetica", "B", 13)
+        self.set_text_color(79, 129, 189)
+        self.ln(4)
+        self.cell(0, 8, title, new_x="LMARGIN", new_y="NEXT")
+        self.set_draw_color(79, 129, 189)
+        self.line(10, self.get_y(), 200, self.get_y())
+        self.ln(3)
+
+    def body_text(self, text):
+        self.set_font("Helvetica", size=10)
+        self.set_text_color(30, 30, 30)
+        self.multi_cell(0, 6, text)
+        self.ln(2)
+
+
+def generate_report(df, profile, insights, filename="report.pdf"):
+    report = ReportPDF()
+    report.add_page()
+
+    report.section_title("1. Dataset Overview")
+    report.body_text(
+        f"Rows: {profile['rows']:,}  |  "
+        f"Columns: {profile['columns']}  |  "
+        f"Missing: {profile['missing_cells']} ({profile['missing_pct']}%)  |  "
+        f"Duplicates: {profile['duplicate_rows']}"
+    )
+
+    report.section_title("2. Column Summary")
+    for col in profile["column_details"]:
+        line = (f"- {col['name']} ({col['dtype']}) "
+                f"- {col['unique']} unique, {col['nulls']} nulls")
+        if "mean" in col:
+            line += f" | mean: {col['mean']}, range: [{col['min']} - {col['max']}]"
+        report.body_text(line)
+
+    if insights:
+        report.section_title("3. AI-Generated Insights")
+        for i, ins in enumerate(insights, 1):
+            report.set_font("Helvetica", "B", 10)
+            report.set_text_color(30, 30, 30)
+            report.cell(0, 7,
+                        f"{i}. {ins.get('title', '')}  [{ins.get('importance', '')}]",
+                        new_x="LMARGIN", new_y="NEXT")
+            report.set_font("Helvetica", size=10)
+            report.multi_cell(0, 6, ins.get("insight", ""))
+            report.set_font("Helvetica", "I", 9)
+            report.set_text_color(79, 129, 189)
+            report.multi_cell(0, 6, f"-> {ins.get('recommendation', '')}")
+            report.set_text_color(30, 30, 30)
+            report.ln(2)
+
+    report.section_title("4. Descriptive Statistics")
+    stats = df.describe().round(2)
+    stats = stats.iloc[:, :10]
+    col_width = min(30, 160 // max(len(stats.columns), 1))
+
+    report.set_font("Helvetica", "B", 8)
+    report.cell(30, 7, "Stat", border=1)
+    for col in stats.columns:
+        report.cell(col_width, 7, str(col)[:12], border=1)
+    report.ln()
+
+    report.set_font("Helvetica", size=8)
+    for idx in stats.index:
+        report.cell(30, 6, str(idx), border=1)
+        for col in stats.columns:
+            report.cell(col_width, 6, str(stats.loc[idx, col]), border=1)
+        report.ln()
+
+    output_path = os.path.join(tempfile.gettempdir(), "insightpilot_report.pdf")
+    report.output(output_path)
+    return output_path

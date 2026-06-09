@@ -49,6 +49,16 @@ auto-generated charts, AI-written insights, natural language Q&A, and a download
 - Scheduled reports
 - Team collaboration
 
+
+### In Scope (MVP — v1.0)
+- Data Quality Score with A–F grading and recommendations
+- Anomaly detection using Z-score with interactive visualisation
+- Correlation insights in plain English
+- Executive Summary generation (4-sentence AI briefing)
+- Persistent chat history via SQLite
+- Comparative analysis for 2 CSV datasets
+- PNG export for all charts
+  
 ## 5. Technical Requirements
 - File upload: CSV + Excel, max 50MB
 - AI response time: <5 seconds per question

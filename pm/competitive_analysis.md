@@ -1,4 +1,4 @@
-# Competitive Analysis — InsightPilot AI
+# Competitive Analysis: InsightPilot AI
 
 ## Landscape Overview
 
@@ -12,6 +12,23 @@
 
 ## Positioning Statement
 InsightPilot is the only tool that lets a non-technical user go from raw CSV to AI-written insights + downloadable report in under 2 minutes with no setup, no training, and no data team required.
+
+## Positioning
+InsightPilot is the only free tool that combines CSV analysis, AI insights, anomaly
+detection, data quality scoring, comparative analysis, and PDF export in a single
+interface — with zero setup and no data team required.
+
+## Updated Competitive Edge (v2.0)
+| Capability | ChatGPT | Julius AI | InsightPilot |
+|-----------|---------|-----------|-------------|
+| Data Quality Score | ❌ | ❌ | ✅ |
+| Anomaly Detection | ⚠️ Manual prompting | ❌ | ✅ Automatic |
+| Correlation Plain English | ⚠️ Manual prompting | ❌ | ✅ Automatic |
+| Compare 2 datasets | ⚠️ Complex setup | ❌ | ✅ One click |
+| Executive Summary | ⚠️ Manual prompting | ❌ | ✅ One click |
+| Persistent Chat | ❌ | ❌ | ✅ SQLite |
+| PDF Export | ❌ | ✅ | ✅ |
+| Free tier | ❌ Paywalled | ❌ Paywalled | ✅ Free |
 
 ## Pricing Benchmark
 - Julius: $25/mo

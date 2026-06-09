@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 # Hero
-st.title("🧠 InsightPilot AI")
+st.title("InsightPilot AI")
 st.subheader("Upload any CSV → AI insights, charts & PDF report in 90 seconds")
 st.markdown("---")
 
@@ -42,11 +42,3 @@ st.markdown("""
 
 st.markdown("---")
 
-# Tech stack
-st.markdown("### Built With")
-t1, t2, t3, t4, t5 = st.columns(5)
-t1.markdown("🐍 **Python**")
-t2.markdown("🎈 **Streamlit**")
-t3.markdown("🤖 **Gemini AI**")
-t4.markdown("📊 **Plotly**")
-t5.markdown("📄 **FPDF2**")

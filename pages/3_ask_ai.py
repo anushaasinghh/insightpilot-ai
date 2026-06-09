@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.ai_analyst import get_ai_insights, parse_insights
 
-st.set_page_config(page_title="Ask AI — InsightPilot", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Ask AI: InsightPilot", page_icon="🤖", layout="wide")
 
 st.markdown("# 🤖 Ask AI About Your Data")
 
@@ -18,7 +18,7 @@ api_key = st.session_state["api_key"]
 
 # ── Auto insights ──────────────────────────────────────────
 st.markdown("## 💡 Auto-Generate Business Insights")
-st.caption("One click — Gemini analyses your data and returns 5 actionable business insights.")
+st.caption("One click: AI analyses your data and returns 5 actionable business insights.")
 
 if st.button("✨ Generate 5 Insights", type="primary", use_container_width=False):
     with st.spinner("Gemini is analysing your data... (5–10 seconds)"):

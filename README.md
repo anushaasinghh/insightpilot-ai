@@ -6,18 +6,14 @@
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Live-brightgreen)
+![Features](https://img.shields.io/badge/Features-11-purple)
 
 > **Upload any CSV or Excel file and get AI-powered business insights,
-> interactive charts, and a downloadable PDF report — in under 90 seconds.**
+> anomaly detection, correlation analysis, executive summaries, and a
+> downloadable PDF report — in under 90 seconds.**
 > No data team. No SQL. No setup.
 
 ## 🔗 [Live App](https://insightpilot-ai-data-analysis.streamlit.app/) · [PM Documentation](pm/) · [Sprint History](agile/) · [Test Suite](qa/)
-
----
-
-## 📸 Screenshots
-
-> Upload page → auto profile → charts → AI insights → PDF export
 
 ---
 
@@ -26,10 +22,16 @@
 | Feature | Description |
 |---------|-------------|
 | 📁 **Upload & Profile** | CSV or Excel. Auto-cleans column names, detects types, shows missing %, duplicates, memory |
+| 🏆 **Data Quality Score** | 0–100 score with grade (A–F), issue breakdown, and actionable recommendations |
 | 📊 **Auto Charts** | 5 chart types generated automatically — time series, bar, distribution, pie, heatmap |
-| 🛠️ **Custom Chart Builder** | Pick any columns, any chart type, any color grouping |
+| 🔴 **Anomaly Detection** | Z-score based detection with adjustable sensitivity — flags outliers on interactive charts |
+| 🔗 **Correlation Insights** | Plain-English explanations of relationships between columns — no statistics degree needed |
+| 🛠️ **Custom Chart Builder** | Pick any columns, any chart type, any colour grouping |
+| ⬇️ **PNG Chart Download** | Download any chart as a high-resolution PNG with one click |
 | 🤖 **AI Insights** | One click → 5 ranked business insights powered by Google Gemini |
-| 💬 **Natural Language Q&A** | Ask "what is my best product?" and get a specific answer |
+| 📋 **Executive Summary** | 4-sentence AI briefing: what the data covers, top finding, top risk, recommended action |
+| 💬 **Persistent Q&A Chat** | Ask plain English questions — chat history saved across page refreshes via SQLite |
+| ⚖️ **Comparative Analysis** | Upload 2 CSVs — instantly see what changed, which metrics moved, side-by-side charts |
 | 📄 **PDF Report** | Download a complete report with profile, stats, and AI insights |
 
 ---
@@ -43,10 +45,10 @@ not just the engineering side.
 |-------|----------------|----------|
 | **Product Management** | PRD, user research, personas, competitive analysis, RICE prioritisation | [`pm/`](pm/) |
 | **Agile** | 3 sprint plans, daily standups, retrospectives, definition of done | [`agile/`](agile/) |
-| **Engineering** | Python, Streamlit, Gemini API, Plotly, FPDF2 | [`utils/`](utils/), [`pages/`](pages/) |
+| **Engineering** | Python, Streamlit, Gemini API, Plotly, FPDF2, SQLite | [`utils/`](utils/), [`pages/`](pages/) |
 | **QA** | 29 unit tests, test plan, 12 manual test cases | [`qa/`](qa/) |
 | **CI/CD** | GitHub Actions — auto-runs tests on every push | [`.github/workflows/`](.github/workflows/) |
-| **Deployment** | Streamlit Cloud — free, live public URL | [Live App](YOUR_STREAMLIT_URL_HERE) |
+| **Deployment** | Streamlit Cloud — free, live public URL | [Live App](https://insightpilot-ai-data-analysis.streamlit.app/) |
 
 ---
 
@@ -56,15 +58,19 @@ not just the engineering side.
 insightpilot-ai/
 ├── app.py                        # Main landing page
 ├── pages/
-│   ├── 1_upload.py               # Upload + data profiling
-│   ├── 2_visualise.py            # Auto charts + custom builder
-│   ├── 3_ask_ai.py               # AI insights + Q&A chat
-│   └── 4_report.py               # PDF export
+│   ├── 1_upload.py               # Upload + data profiling + quality score
+│   ├── 2_visualise.py            # Auto charts + anomaly detection + correlation insights + PNG download
+│   ├── 3_ask_ai.py               # Executive summary + AI insights + persistent Q&A chat
+│   ├── 4_report.py               # PDF export
+│   └── 5_compare.py              # Comparative analysis — upload 2 CSVs
 ├── utils/
-│   ├── data_processor.py         # Load, clean, profile data
-│   ├── chart_builder.py          # Plotly chart generation
-│   ├── ai_analyst.py             # Gemini API integration
-│   └── pdf_generator.py          # PDF report generation
+│   ├── data_processor.py         # Load, clean, profile, quality score, anomaly detection, comparison
+│   ├── chart_builder.py          # Plotly charts, anomaly chart, PNG export, correlation plain English
+│   ├── ai_analyst.py             # Gemini API — insights, Q&A, executive summary
+│   ├── pdf_generator.py          # PDF report generation
+│   └── chat_history.py           # SQLite persistent chat storage
+├── database/
+│   └── insightpilot.db           # Auto-created SQLite database (gitignored)
 ├── pm/
 │   ├── PRD.md                    # Product Requirements Document
 │   ├── user_research.md          # Personas + interview findings
@@ -146,13 +152,50 @@ qa/tests/test_ai_analyst.py::test_parse_insights_valid_json PASSED
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
 | Frontend + Backend | Streamlit | UI and app logic |
-| AI | Google Gemini 1.5 Flash | Insights + Q&A |
-| Data | Pandas, NumPy | Processing + analysis |
-| Charts | Plotly | Interactive visualisations |
+| AI | Google Gemini 2.0 Flash | Insights, Q&A, Executive Summary |
+| Data | Pandas, NumPy, SciPy | Processing, analysis, anomaly detection |
+| Charts | Plotly + Kaleido | Interactive visualisations + PNG export |
 | PDF | FPDF2 | Report generation |
+| Database | SQLite | Persistent chat history |
 | Testing | pytest | Unit tests |
 | CI/CD | GitHub Actions | Automated test pipeline |
 | Deployment | Streamlit Cloud | Free hosting |
+
+---
+
+## 🔴 Anomaly Detection — How It Works
+
+InsightPilot uses the **Z-score method** to detect anomalies:
+
+```
+Z = (value - mean) / standard_deviation
+```
+
+Any value with |Z| > 3.0 is flagged — this occurs in only 0.3% of normally distributed data.
+The threshold is adjustable (1.5–5.0) so you can tune sensitivity for your dataset.
+Anomalies are highlighted in red on interactive charts with upper/lower threshold lines shown.
+
+---
+
+## 🏆 Data Quality Score — How It's Calculated
+
+| Penalty | Condition | Max Deduction |
+|---------|-----------|---------------|
+| Missing data | Proportional to % missing | -30 points |
+| Duplicate rows | Proportional to % duplicates | -20 points |
+| Low-cardinality numeric columns | Numeric columns with < 5 unique values | -3 per column |
+| High-cardinality categorical columns | All-unique categorical columns (ID columns) | -3 per column |
+
+Grades: **A (90–100) · B (75–89) · C (60–74) · D (40–59) · F (0–39)**
+
+---
+
+## ⚖️ Comparative Analysis — Use Cases
+
+- **Month vs Month** — upload Jan sales and Feb sales, see what changed
+- **Region vs Region** — compare two market segments side by side
+- **Before vs After** — measure the impact of a campaign or product change
+- **No matching columns?** — the tool automatically identifies common columns and skips mismatches
 
 ---
 
@@ -198,6 +241,8 @@ Full sprint plans, standups, and retrospectives in [`agile/`](agile/)
 - **Context window management** — sending compact data summaries, not raw data
 - **Output parsing** — robust JSON extraction with fallback handling
 - **Grounded generation** — AI answers are grounded in actual dataset statistics
+- **Z-score anomaly detection** — statistical outlier identification
+- **Pearson correlation** — relationship strength between numeric variables
 
 ---
 
@@ -215,15 +260,22 @@ Use it to demo the app without uploading your own data.
 
 ## 🔒 Security
 
-- API keys stored in `.streamlit/secrets.toml` never committed to Git
-- No raw data sent to AI; only statistical summaries
-- No user data stored; everything lives in session state only
-- `secrets.toml` explicitly excluded in `.gitignore`
+- API keys stored in `.streamlit/secrets.toml` — never committed to Git
+- No raw data sent to AI — only statistical summaries
+- Chat history stored locally in SQLite — never sent to any server
+- `secrets.toml` and `database/` explicitly excluded in `.gitignore`
 
 ---
 
 ## 🗺️ Roadmap
 
+- [x] Data Quality Score
+- [x] Anomaly Detection
+- [x] Correlation Plain English Insights
+- [x] Executive Summary
+- [x] Persistent Chat History
+- [x] Comparative Analysis (2 CSVs)
+- [x] PNG Chart Download
 - [ ] User authentication + saved sessions
 - [ ] Database connections (Postgres, BigQuery)
 - [ ] Scheduled email reports
